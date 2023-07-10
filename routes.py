@@ -1,10 +1,18 @@
+import sqlalchemy
 from flask import Flask, render_template
+from Flask_sqlalchemy import SQLAlchemy
 from flask_wtf import Flaskform
-from wtffroms_sqlalchemy.fields import QuerySelectField
+from wtffroms_sqlalchemy.fields import QuerySelectField, SelectMultipleField, QuerySelectMultipleField
 from wtforms import (StringField, TextAreaField, IntegerField, BooleanField,
 RadioField)
 
+import inventory_management_system.db
+
+
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqllite:////C:/dev/12DTP/Inventory_management_system.db'
+db = sqlalchemy(app)
 
 @app.route("/")
 def home():
@@ -41,8 +49,13 @@ def our_story():
     
     
 
-@app.route("customer_purchase")    
+@app.route("/customer_purchase", methods = "GET", "POST")    
 def customer_purchase():
+    form = customer_purchase()
+    form.dishes.query = query.Recipe.all()
+    return render_template("our_story.html", )
+    
+   
 
 
 
