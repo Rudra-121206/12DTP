@@ -1,12 +1,12 @@
-import sqlalchemy
-from flask import Flask, render_template
+
+from flask import Flask, render_template, abort
 from Flask_sqlalchemy import SQLAlchemy
 from flask_wtf import Flaskform
 from wtffroms_sqlalchemy.fields import QuerySelectField, SelectMultipleField, QuerySelectMultipleField
-from wtforms import (StringField, TextAreaField, IntegerField, BooleanField,
+from wtforms import (StringField, IntegerField, BooleanField,
 RadioField)
 
-import inventory_management_system.db
+ 
 
 
 app = Flask(__name__)
@@ -49,10 +49,10 @@ def our_story():
     
     
 
-@app.route("/customer_purchase", methods = "GET", "POST")    
+@app.route("/customer_purchase", methods = ["GET","POST"])    
 def customer_purchase():
     form = customer_purchase()
-    form.dishes.query = query.Recipe.all()
+    form.dishes.query =  Recipe.query.all()
     return render_template("our_story.html", )
     
    
