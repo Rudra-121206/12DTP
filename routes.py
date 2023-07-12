@@ -1,18 +1,17 @@
 
+import sqlite3
 from flask import Flask, render_template, abort
-from Flask_sqlalchemy import SQLAlchemy
-from flask_wtf import Flaskform
-from wtffroms_sqlalchemy.fields import QuerySelectField, SelectMultipleField, QuerySelectMultipleField
-from wtforms import (StringField, IntegerField, BooleanField,
-RadioField)
-
- 
+import sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms_alchemy import QuerySelectField, QuerySelectMultipleField
+from wtforms import StringField, IntegerField, BooleanField, RadioField, SelectMultipleField
 
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqllite:////C:/dev/12DTP/Inventory_management_system.db'
-db = sqlalchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Inventory_management_system.db'
+db = SQLAlchemy(app)
 
 @app.route("/")
 def home():
@@ -56,9 +55,8 @@ def customer_purchase():
     return render_template("our_story.html", )
     
    
-
-
-
+if __name__ == "__main__":
+    app.run()
 
 
 
