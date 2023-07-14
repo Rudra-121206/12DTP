@@ -6,12 +6,23 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms_alchemy import QuerySelectField, QuerySelectMultipleField
 from wtforms import StringField, IntegerField, BooleanField, RadioField, SelectMultipleField
+from sqlalchemy.ext.automap import automap_base
 
-
+#def create_app():
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Inventory_management_system.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Inventory_management_system.db' 
 db = SQLAlchemy(app)
+    #with app.app_context():
+        #init_db()
+
+    #return app
+#app = Flask(__name__)
+
+
+
+Base = automap_base()
+Base.prepare(db.engine, reflect=True, )
+Recipe = Base.classes.recipe
 
 @app.route("/")
 def home():
@@ -21,7 +32,7 @@ def home():
 
 @app.route("/menu")
 def menu():
-    conn = sqlite3.connect('Inventory management system.db')
+    conn = sqlite3.connect('Inventory_management_system.db')
     cur = conn.cursor
     cur.execute('SELECT * FROM Recipe ORDER BY name ASC;')
     menu = cur.fetchall()
@@ -51,12 +62,14 @@ def our_story():
 @app.route("/customer_purchase", methods = ["GET","POST"])    
 def customer_purchase():
     form = customer_purchase()
-    form.dishes.query =  Recipe.query.all()
-    return render_template("our_story.html", )
+    form.dishes.query =  db.session.query(Recipe).all()
+
+    return render_template("costumer_purchase.html" )
     
-   
-if __name__ == "__main__":
+if __name__=="__main__":
     app.run()
+ 
+    
 
 
 

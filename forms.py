@@ -2,7 +2,7 @@
 from flask_wtf import Flaskform
 from wtforms import StringField,IntegerField,SelectField,SubmitField
 from wtforms.validators import DataRequired,NumberRange
-from wtffroms_sqlalchemy.fields import QuerySelectField, SelectMultipleField, QuerySelectMultipleField
+from wtforms_alchemy import QuerySelectField, SelectMultipleField, QuerySelectMultipleField
 # form for customers
 class customer_purchase(Flaskform):
  name =  StringField('name', validators = [DataRequired()])
