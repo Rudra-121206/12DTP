@@ -10,19 +10,12 @@ from sqlalchemy.ext.automap import automap_base
 
 #def create_app():
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Inventory_management_system.db' 
-db = SQLAlchemy(app)
+
     #with app.app_context():
         #init_db()
 
     #return app
 #app = Flask(__name__)
-
-
-
-Base = automap_base()
-Base.prepare(db.engine, reflect=True, )
-Recipe = Base.classes.recipe
 
 @app.route("/")
 def home():
@@ -59,12 +52,12 @@ def our_story():
     
     
 
-@app.route("/customer_purchase", methods = ["GET","POST"])    
+@app.route("/customer_purchase")    
 def customer_purchase():
-    form = customer_purchase()
-    form.dishes.query =  db.session.query(Recipe).all()
 
-    return render_template("costumer_purchase.html" )
+
+
+    return render_template("costumer_purchase.html",   )
     
 if __name__=="__main__":
     app.run()

@@ -1,5 +1,23 @@
 {% extends 'layout.html' %}
 {% block content %}
 <h1>This is the costumer_purchase form page</h1>
+<form method="Post">
+    {{ form.hidden_tag() }}
+    {{ form.name.label }}
+    {{ form.name()}}
+    <br>
+    {{ form.phone_number.label }}
+    {{ form.phone_number() }}
+    <br>
+    {{ form.dishes.label }}
+    {{ form.dishes() }}
+    <br>
+    {{ form.qty.label }}
+    {{ form.qty() }}
+    <br>
+    {{ form.orderfood() }}
 
+
+
+</form>
 {% endblock %}
