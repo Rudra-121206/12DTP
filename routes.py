@@ -1,12 +1,5 @@
-
-import sqlite3
 from flask import Flask, render_template, abort
-import sqlalchemy
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms_alchemy import QuerySelectField, QuerySelectMultipleField
-from wtforms import StringField, IntegerField, BooleanField, RadioField, SelectMultipleField
-from sqlalchemy.ext.automap import automap_base
+import sqlite3
 
 #def create_app():
 app = Flask(__name__)
@@ -26,20 +19,20 @@ def home():
 @app.route("/menu")
 def menu():
     conn = sqlite3.connect('Inventory_management_system.db')
-    cur = conn.cursor
-    cur.execute('SELECT * FROM Recipe ORDER BY name ASC;')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Recipe ORDER BY recipe_name ASC;')
     menu = cur.fetchall()
     print(menu)
     conn.close()
-    return render_template("menu.html",title= "menu")
+    return render_template("menu.html",title= menu)
 
 
 
 @app.route("/admin")
 def admin():
-    conn = sqlite3.connect('Inventory management system.db')
-    cur = conn.cursor
-    cur.execute('SELECT * FROM inventory ORDER BY name ASC;')
+    conn = sqlite3.connect('Inventory_management_system.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM inventory ORDER BY item_name ASC;')
     inventory = cur.fetchall()
     print(inventory)
     return render_template("admin.html",title= "admin")
@@ -60,7 +53,7 @@ def customer_purchase():
     return render_template("costumer_purchase.html",   )
     
 if __name__=="__main__":
-    app.run()
+    app.run(debug=True)
  
     
 
