@@ -1,23 +1,19 @@
 {% extends 'layout.html' %}
 {% block content %}
 <h1>This is the costumer_purchase form page</h1>
-<form method="Post">
-    {{ form.hidden_tag() }}
-    {{ form.name.label }}
-    {{ form.name()}}
-    <br>
-    {{ form.phone_number.label }}
-    {{ form.phone_number() }}
-    <br>
-    {{ form.dishes.label }}
-    {{ form.dishes() }}
-    <br>
-    {{ form.qty.label }}
-    {{ form.qty() }}
-    <br>
-    {{ form.orderfood() }}
+<form action="/customer_purchase", method="POST">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
 
+    <label for="phone">Phone number</label>
+    <input type="number" name="phone" id="phone" min="1000000" max="9999999999" required>
 
-
+    <label for="order">Order(s)</label>
+    <select id="order" name="order" multiple>
+        {% for inventory in inventory %}
+        <option  id={{ inventory[0] }}>{{ inventory[1] }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Submit">
 </form>
 {% endblock %}

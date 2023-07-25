@@ -1,4 +1,4 @@
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request, redirect, url_for
 import sqlite3
 
 #def create_app():
@@ -24,7 +24,7 @@ def menu():
     menu = cur.fetchall()
     print(menu)
     conn.close()
-    return render_template("menu.html",title= menu)
+    return render_template("menu.html",title= "menu", menu = menu)
 
 
 
@@ -32,26 +32,54 @@ def menu():
 def admin():
     conn = sqlite3.connect('Inventory_management_system.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM inventory ORDER BY item_name ASC;')
+    cur.execute('SELECT * FROM Inventory ORDER BY item_name ASC;')
     inventory = cur.fetchall()
     print(inventory)
-    return render_template("admin.html",title= "admin")
+    return render_template("admin.html",title= "admin", inventory=inventory)
 
 
 
 @app.route("/our story")
 def our_story():
     return render_template("our_story.html",title= "our_story")
+
+def insert_data(name, phone):
+    conn = sqlite3.connect('Inventory_management_system.db')
+    cur = conn.cursor()
+    cur.execute('INSERT INTO Orders(order_name, phone_no) VALUES(?,?)',(name, phone))
+    conn.commit()
+    conn.close()
     
+        
     
 
-@app.route("/customer_purchase")    
+@app.route("/customer_purchase", methods=['GET'])    
 def customer_purchase():
+    conn = sqlite3.connect('Inventory_management_system.db')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Inventory ORDER BY item_name ASC;')
+    inventory = cur.fetchall()
+    return render_template("costumer_purchase.html",inventory=inventory )
+
+
+@app.route("/customer_purchase", methods=['POST'])
+def submit():
+    name = request.form['name']
+    phone = request.form['phone']
+     
+    insert_data(name, phone)
+    return redirect(url_for('success'))    
+
+@app.route("/success", methods=['GET'])
+def success():
+    conn = sqlite3.connect('Inventory_management_system.db')
+    cur = conn.cursor()
+    cur.execute('SELECT order_id FROM Orders ORDER BY order_id DESC LIMIT 1')
+    token = cur.fetchone()
+    return (f"Your order is successful, your order token is {token[0]}")
 
 
 
-    return render_template("costumer_purchase.html",   )
-    
 if __name__=="__main__":
     app.run(debug=True)
  
