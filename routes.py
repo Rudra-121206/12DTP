@@ -27,7 +27,7 @@ def menu():
     return render_template("menu.html",title= "menu", menu = menu)
 
 
-
+# displays admin informmation
 @app.route("/admin")
 def admin():
     conn = sqlite3.connect('Inventory_management_system.db')
@@ -43,12 +43,24 @@ def admin():
 def our_story():
     return render_template("our_story.html",title= "our_story")
 
+
 def insert_data(name, phone):
     conn = sqlite3.connect('Inventory_management_system.db')
     cur = conn.cursor()
     cur.execute('INSERT INTO Orders(order_name, phone_no) VALUES(?,?)',(name, phone))
     conn.commit()
     conn.close()
+
+
+def insert_data_joiningtable(token,name,phone,orders):
+    conn = sqlite3.connect('Inventory_management_system.db')
+    cur = conn.cursor()
+    for orders in orders:
+        cur.execute('INSERT  ')
+
+
+
+        
     
         
     
@@ -57,15 +69,19 @@ def insert_data(name, phone):
 def customer_purchase():
     conn = sqlite3.connect('Inventory_management_system.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM Inventory ORDER BY item_name ASC;')
-    inventory = cur.fetchall()
-    return render_template("costumer_purchase.html",inventory=inventory )
+    cur.execute('SELECT * FROM Recipe ORDER BY recipe_name ASC;')
+    recipes = cur.fetchall()
+    conn.close()
+    return render_template("costumer_purchase.html",recipes=recipes )
 
 
 @app.route("/customer_purchase", methods=['POST'])
 def submit():
+    
     name = request.form['name']
     phone = request.form['phone']
+    order = request.form['order']
+     
      
     insert_data(name, phone)
     return redirect(url_for('success'))    

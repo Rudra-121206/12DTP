@@ -10,8 +10,8 @@
 
     <label for="order">Order(s)</label>
     <select id="order" name="order" multiple>
-        {% for inventory in inventory %}
-        <option  id={{ inventory[0] }}>{{ inventory[1] }}</option>
+        {% for recipes in recipes %}
+        <option  value="{{ recipes[0] }}">{{ recipes[1] }}</option>
         {% endfor %}
     </select>
     <input type="submit" value="Submit">
