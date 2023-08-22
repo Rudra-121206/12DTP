@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+<form action="/customer_purchase_a", method="POST">
+    {% for order in order %}
+      <label for="qty">order</label>
+      <input type="number" name="order" id="order" min="1" max="4" required>
+    {% endfor %} 
+    
+    
+
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}
