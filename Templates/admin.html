@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
 <table>
+  <form>  
     <tr>    
         <th>Name</th>
         <th>expiry</th>
@@ -15,9 +16,10 @@
         <td>{{ inventory[2] }}</td>
         <td>{{ inventory[3] }}</td>
         <td>{{ inventory[4] }}</td>
-        <td><button>Buy</button></td>
+        <td><a href="/add_product?added_qty=500&id={{ inventory[0] }}">Buy</a></td>
     </tr>
         {% endfor %}
+  </form>   
     
 </table>
 
