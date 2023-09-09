@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+import datetime
 
 
 app = Flask(__name__)
@@ -37,7 +38,7 @@ def adjust_stock(token):
     return 'done'
 
 def check_stock():
-    balance_qty=select_database('SELECT base_qty, balance_qty FROM Inventory')
+    balance_qty=select_database('SELECT base_qty, balance_qty FROM Inventory', 1)
     status=True
     for balance in balance_qty:
         if balance[1]>balance[0]:
@@ -72,12 +73,24 @@ def select_database(*args):
 
 @app.route("/")
 def home():
+    print(datetime)
     return render_template("home.html", title="Rudra's restaurant")
 
 
-@app.route("/add_product")
+@app.route("/add_product", methods=['GET'])
 def add_product():
-    request.args.get(id)
+    a= request.args.get('added_qty')
+    a= int(a)
+    item_id= request.args.get('id')
+    item_id = int(item_id)
+    qty= select_database('SELECT balance_qty FROM Inventory WHERE item_id = ?', item_id, 1)
+    qty= qty[0][0]
+    qty= int(qty)
+    changed_qty= a+qty
+    insert_database('UPDATE Inventory SET balance_qty = ? WHERE item_id = ?', changed_qty, item_id)
+
+    return redirect(url_for("admin"))
+
 
 
 
