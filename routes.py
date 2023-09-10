@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 app = Flask(__name__)
 
-
+# function for inserting and updating values in the database
 def insert_database(*args):
     conn = sqlite3.connect('Inventory_management_system.db')
     cur = conn.cursor()
@@ -20,7 +20,7 @@ def insert_database(*args):
     conn.commit()
     conn.close()
 
-
+# get the price of the customer's orders, to show them.
 def get_price(token):
     orders = select_database('SELECT recipe_id, qty FROM Recipe_Order WHERE order_id = ?', token, 1)
     total_price = 0
@@ -32,18 +32,19 @@ def get_price(token):
         total_price = price + total_price
     return total_price
 
-
+# change stock according to what is bought by customers.
 def adjust_stock(token):
-    orders=select_database('SELECT order_id, recipe_id FROM Recipe_Order WHERE order_id = ?', token[0], 1)
+    orders=select_database('SELECT recipe_id, qty FROM Recipe_Order WHERE order_id = ?', token[0], 1)
     for order in orders:
         qty=order[1]
+        print(qty)
         recipe = order[0]
-        results= select_database('SELECT * FROM Item_recipe WHERE recipe_id = ?', recipe, 1)
+        print(recipe)
+        results = select_database('SELECT * FROM Item_Recipe WHERE recipe_id = ?', recipe, 1)
         for result in results:
             used_qty=result[0]
             print (used_qty)
             total_used_qty=used_qty*qty
-            print(qty)
             print(total_used_qty)          
             item_id=result[2]
             print(item_id)
@@ -53,7 +54,8 @@ def adjust_stock(token):
             print(changed_qty)
             insert_database('UPDATE Inventory SET balance_qty = ? WHERE item_id = ?', changed_qty, item_id)
     return 'done'
-
+# check that stock is enough to sell to customers, check that stock is not past expiry date, 
+# if stock is then make all stock for that item 0
 def check_stock():
     balance_qty=select_database('SELECT item_id, item_expiry, base_qty, balance_qty FROM Inventory', 1)
     status=True
@@ -98,14 +100,14 @@ def select_database(*args):
     return results
 
 
+# direct to home page
 @app.route("/")
 def home():
-    x=(date.today())
-    print(x)
-
     return render_template("home.html", title="Rudra's restaurant")
 
 
+# add inventory when stocks are low so that restaurant can run, change expiry date, 
+# check that existing stock doesnt have expiry date lower than today , if it does throw it all out before buying new stock
 @app.route("/add_product", methods=['GET'])
 def add_product():
     added_qty= request.args.get('added_qty')
@@ -132,7 +134,7 @@ def add_product():
     return redirect(url_for("admin"))
 
 
-
+#show all existing menu
 @app.route("/menu")
 def menu():
     menu = select_database('SELECT * FROM Recipe ORDER BY recipe_name ASC;', 1)
@@ -158,11 +160,12 @@ def customer_purchase():
 recipe_name ASC;', 1)
     return render_template("costumer_purchase.html", recipes=recipes)
 
-#get information from form
+
+#get information from form, check that there is enough stock, 
+# then adjust stock levels according what has been bought, redirect to success if order is successful
 @app.route("/customer_purchase", methods=['GET','POST'])
 def submit():
     status = check_stock()
-    print(status)
     if status is True:
         name = request.form['name']
         phone = request.form['phone']
@@ -191,7 +194,7 @@ def submit():
 
 
  
-
+# redirect to this url once the order is successful
 @app.route("/success", methods=['GET'])
 def success():
     token = select_database('SELECT order_id FROM Orders ORDER BY \
@@ -200,7 +203,7 @@ order_id DESC LIMIT 1', 2)
     token = int(token)
     price = get_price(token)
     return (f"Your order is successful, your order token is {token}. Your order costs ${price}")
-
+    
 
 
 
