@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-import datetime
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 
 app = Flask(__name__)
@@ -19,32 +20,58 @@ def insert_database(*args):
     conn.commit()
     conn.close()
 
+
+def get_price(token):
+    orders = select_database('SELECT recipe_id, qty FROM Recipe_Order WHERE order_id = ?', token, 1)
+    total_price = 0
+    for order in orders: 
+        price = select_database('SELECT price FROM Recipe where recipe_id = ?', order[0], 2) 
+        price = price[0]*order[1]
+        price = str(price)
+        price = int(price)
+        total_price = price + total_price
+    return total_price
+
+
 def adjust_stock(token):
-    orders=select_database('SELECT * FROM Recipe_Order WHERE order_id = ?', token[0], 1)
+    orders=select_database('SELECT order_id, recipe_id FROM Recipe_Order WHERE order_id = ?', token[0], 1)
     for order in orders:
-        amt= order[2]
         qty=order[1]
         recipe = order[0]
-        print(amt)
-        print(recipe)
         results= select_database('SELECT * FROM Item_recipe WHERE recipe_id = ?', recipe, 1)
         for result in results:
             used_qty=result[0]
+            print (used_qty)
             total_used_qty=used_qty*qty
+            print(qty)
+            print(total_used_qty)          
             item_id=result[2]
+            print(item_id)
             original_qty=select_database('SELECT balance_qty FROM Inventory WHERE item_id = ?', item_id[0], 2)
+            print(original_qty)
             changed_qty=original_qty[0]-total_used_qty
+            print(changed_qty)
             insert_database('UPDATE Inventory SET balance_qty = ? WHERE item_id = ?', changed_qty, item_id)
     return 'done'
 
 def check_stock():
-    balance_qty=select_database('SELECT base_qty, balance_qty FROM Inventory', 1)
+    balance_qty=select_database('SELECT item_id, item_expiry, base_qty, balance_qty FROM Inventory', 1)
     status=True
+    Date=(datetime.today())
     for balance in balance_qty:
-        if balance[1]>balance[0]:
-            continue
-        else:
+        item_expiry=balance[1]
+        item_expiry=str(item_expiry)
+        item_expiry = datetime.strptime(item_expiry, '%Y-%m-%d')
+
+        if balance[2]>balance[3]:
+            status=False 
+        elif Date>(item_expiry):
             status=False
+            insert_database('UPDATE Inventory SET balance_qty = 0 WHERE item_id = ?', balance[0])      
+        else:
+            status=status
+    
+            
     return status
 
 
@@ -73,24 +100,36 @@ def select_database(*args):
 
 @app.route("/")
 def home():
-    print(datetime)
+    x=(date.today())
+    print(x)
+
     return render_template("home.html", title="Rudra's restaurant")
 
 
 @app.route("/add_product", methods=['GET'])
 def add_product():
-    a= request.args.get('added_qty')
-    a= int(a)
+    added_qty= request.args.get('added_qty')
+    added_qty= int(added_qty)
     item_id= request.args.get('id')
     item_id = int(item_id)
-    qty= select_database('SELECT balance_qty FROM Inventory WHERE item_id = ?', item_id, 1)
-    qty= qty[0][0]
+    result= select_database('SELECT item_expiry, balance_qty FROM Inventory WHERE item_id = ?', item_id, 1)
+    qty= result[0][1]
     qty= int(qty)
-    changed_qty= a+qty
-    insert_database('UPDATE Inventory SET balance_qty = ? WHERE item_id = ?', changed_qty, item_id)
+    changed_qty= added_qty+qty
+    current_date = datetime.today()
+    item_expiry=result[0][0]
+    item_expiry=str(item_expiry)
+    item_expiry = datetime.strptime(item_expiry, '%Y-%m-%d')
+    expiry_date = current_date + relativedelta(months=2)
+    expiry_date=str(expiry_date)
+    expiry_date=(expiry_date.split(" "))
+    expiry_date=expiry_date[0]
+    if current_date>(item_expiry):
+        insert_database('UPDATE Inventory SET item_expiry = ?, balance_qty = ? WHERE item_id = ?', expiry_date, added_qty, item_id)   
+    else:
+        insert_database('UPDATE Inventory SET item_expiry = ?, balance_qty = ? WHERE item_id = ?', expiry_date, changed_qty, item_id)
 
     return redirect(url_for("admin"))
-
 
 
 
@@ -123,6 +162,7 @@ recipe_name ASC;', 1)
 @app.route("/customer_purchase", methods=['GET','POST'])
 def submit():
     status = check_stock()
+    print(status)
     if status is True:
         name = request.form['name']
         phone = request.form['phone']
@@ -156,7 +196,10 @@ def submit():
 def success():
     token = select_database('SELECT order_id FROM Orders ORDER BY \
 order_id DESC LIMIT 1', 2)
-    return (f"Your order is successful, your order token is {token[0]}")
+    token = str(token[0])
+    token = int(token)
+    price = get_price(token)
+    return (f"Your order is successful, your order token is {token}. Your order costs ${price}")
 
 
 
