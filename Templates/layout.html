@@ -1,11 +1,16 @@
-!doctype html>
+<!doctype html>
 <html>
  <head>
    <title>{{title}}</title>
+   <link rel="stylesheet" href="/static/styles.css">
  </head>
  <body>
+  <div class="header">
    {% include 'header.html' %}
-   {% include 'nav.html' %}
+  </div>
+  <div class="navbar">
+    {% include 'nav.html' %}
+  </div> 
    {% block content %}{% endblock %}
    {% include 'footer.html' %}
  </body>

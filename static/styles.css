@@ -1,0 +1,41 @@
+body {
+    background-color: palevioletred;
+
+}
+div.navbar {
+    background-color: pink;
+    opacity: 0.6; 
+    padding-top: 20px;
+    padding-bottom: 20px;  
+    top:0px ;
+}
+.navbar{
+    text-align: left;
+    background-color: pink;
+    font-size: large;
+    text-decoration: none;
+    font-style:'Times New Roman';
+    color: deeppink;
+    opacity: 0.6;
+    padding-top: 20px;
+    padding-bottom: 20px; 
+    padding-right: 20px;
+    padding-left: 20px;
+    top:0px ;
+    border:0px;
+
+}
+a.navbar:hover{
+    background-color: deeppink;
+    color: white;
+    transition-delay: o.5s;
+    box-shadow: inset;
+    border-color: deeppink;
+
+}
+
+.img{
+   
+}
+
+

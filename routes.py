@@ -37,21 +37,14 @@ def adjust_stock(token):
     orders=select_database('SELECT recipe_id, qty FROM Recipe_Order WHERE order_id = ?', token[0], 1)
     for order in orders:
         qty=order[1]
-        print(qty)
         recipe = order[0]
-        print(recipe)
         results = select_database('SELECT * FROM Item_Recipe WHERE recipe_id = ?', recipe, 1)
         for result in results:
             used_qty=result[0]
-            print (used_qty)
-            total_used_qty=used_qty*qty
-            print(total_used_qty)          
+            total_used_qty=used_qty*qty          
             item_id=result[2]
-            print(item_id)
             original_qty=select_database('SELECT balance_qty FROM Inventory WHERE item_id = ?', item_id[0], 2)
-            print(original_qty)
             changed_qty=original_qty[0]-total_used_qty
-            print(changed_qty)
             insert_database('UPDATE Inventory SET balance_qty = ? WHERE item_id = ?', changed_qty, item_id)
     return 'done'
 # check that stock is enough to sell to customers, check that stock is not past expiry date, 
@@ -71,13 +64,8 @@ def check_stock():
             status=False
             insert_database('UPDATE Inventory SET balance_qty = 0 WHERE item_id = ?', balance[0])      
         else:
-            status=status
-    
-            
+            status=status       
     return status
-
-
-
 
 
 # Call function and arguments should be in this order:
