@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% for recipe in recipe %}
+    <img src="/static/{{recipe[0]}}.jpg">
+    {{ recipe[1] }}
+    {{ recipe[2] }}
+    {{ recipe[3] }}
+   
+{% endfor %}
+
+{% endblock %}

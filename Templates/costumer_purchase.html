@@ -7,12 +7,16 @@
 
     <label for="phone">Phone number</label>
     <input type="number" name="phone" id="phone" min="1000000" max="9999999999" required>
-
+      <div class="grid-container">
         {% for recipes in recipes %}
-        <label for="{{recipes [1]}}">{{recipes [1]}}</label>
-        <input type="number" name="order" id="{{recipes [0]}}" min="0" max="4" value = "0" required>
+          <div class="grid-item">
+            <img src="/static/{{recipes[0]}}.jpg" >
+            <label for="{{recipes [1]}}">{{recipes [1]}}</label>
+            <input type="number" name="order" id="{{recipes [0]}}" min="0" max="4" value = "0" required>
+          </div>
         {% endfor %}
-    </select>
-    <input type="submit" value="Submit">
+      </div>
+     
+        <input type="submit" value="Submit">
 </form>
 {% endblock %}
